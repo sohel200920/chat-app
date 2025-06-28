@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login | Chat App</title>
+  <style>
+    /* Same WhatsApp theme */
+    :root {
+      --whatsapp-green: #25d366;
+      --whatsapp-dark-green: #075e54;
+      --whatsapp-light-green: #dcf8c6;
+      --whatsapp-gray: #ebebeb;
+      --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      margin: 0; padding: 0;
+      font-family: var(--font-family);
+      background: var(--whatsapp-light-green);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: white;
+      padding: 30px 40px;
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      width: 350px;
+      text-align: center;
+    }
+
+    h2 {
+      color: var(--whatsapp-dark-green);
+      margin-bottom: 20px;
+    }
+
+    input[type=text], input[type=password] {
+      width: 100%;
+      padding: 12px 15px;
+      margin: 8px 0 20px 0;
+      border: 1px solid #ccc;
+      border-radius: 20px;
+      box-sizing: border-box;
+      font-size: 16px;
+      transition: border-color 0.3s ease;
+    }
+
+    input[type=text]:focus, input[type=password]:focus {
+      border-color: var(--whatsapp-green);
+      outline: none;
+    }
+
+    button {
+      width: 100%;
+      background-color: var(--whatsapp-green);
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 25px;
+      font-size: 18px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background-color: #128c4a;
+    }
+
+    p {
+      margin-top: 20px;
+      font-size: 14px;
+    }
+
+    a {
+      color: var(--whatsapp-green);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Login</h2>
+    <form id="loginForm">
+      <input type="text" id="username" placeholder="Username" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <button type="submit">Login</button>
+    </form>
+    <p>Don't have an account? <a href="index.html">Register here</a></p>
+  </div>
+
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+
+      const res = await fetch('/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
+
+      if (res.ok) {
+        localStorage.setItem('username', username);
+        window.location.href = 'chat.html';
+      } else {
+        const data = await res.json();
+        alert(data.message || 'Login failed');
+      }
+    });
+  </script>
+</body>
+</html>
