@@ -8,104 +8,149 @@
     :root {
       --whatsapp-green: #25d366;
       --whatsapp-dark-green: #075e54;
-      --whatsapp-light-green: #dcf8c6;
+      --whatsapp-light-green: #e9fff1;
+      --glass-white: rgba(255,255,255,0.85);
+      --primary-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+      --focus-shadow: 0 0 0 3px rgba(37,211,102,0.23);
+      --border-glow: 0 0 0 3px #25d36688;
       --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     body {
-      margin: 0; padding: 0;
-      font-family: var(--font-family);
-      background: var(--whatsapp-light-green);
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, var(--whatsapp-dark-green) 0%, var(--whatsapp-green) 100%);
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      font-family: var(--font-family);
+      animation: gradient-flow 7s ease-in-out infinite alternate;
+    }
+
+    @keyframes gradient-flow {
+      0% { background-position: 0 50%; }
+      100% { background-position: 100% 50%; }
     }
 
     .container {
-      background: white;
-      padding: 30px 40px;
-      border-radius: 8px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-      width: 350px;
+      background: var(--glass-white);
+      box-shadow: var(--primary-shadow);
+      backdrop-filter: blur(18px);
+      border-radius: 18px;
+      padding: 38px 44px 36px 44px;
+      width: 370px;
       text-align: center;
+      border: 1px solid #e8ffed;
+      position: relative;
+      overflow: hidden;
+      transition: box-shadow 0.35s;
+    }
+    .container:hover {
+      box-shadow: 0 16px 48px 0 rgba(37,211,102,0.12), 0 1.5px 18px 0 rgba(7,94,84,0.11);
     }
 
     h2 {
+      font-size: 2.2em;
       color: var(--whatsapp-dark-green);
-      margin-bottom: 20px;
+      letter-spacing: 1px;
+      margin-bottom: 24px;
+      font-weight: 700;
+      text-shadow: 0 2px 16px #25d36622;
     }
 
     input[type=text], input[type=password] {
       width: 100%;
-      padding: 12px 15px;
-      margin: 8px 0 20px 0;
-      border: 1px solid #ccc;
-      border-radius: 20px;
-      box-sizing: border-box;
-      font-size: 16px;
-    }
-
-    input[type=text]:focus, input[type=password]:focus {
-      border-color: var(--whatsapp-green);
+      padding: 14px 18px;
+      margin: 10px 0 26px 0;
+      border: none;
+      border-radius: 25px;
+      font-size: 18px;
+      background: #f2faf6;
+      transition: box-shadow 0.26s, border 0.22s, background 0.4s;
+      box-shadow: 0 2px 4px rgba(7,94,84,0.05);
+      color: #263238;
       outline: none;
+    }
+    input[type=text]:focus, input[type=password]:focus {
+      background: #e6fcf4;
+      box-shadow: var(--focus-shadow), var(--border-glow);
+      border: 1.5px solid var(--whatsapp-green);
     }
 
     .file-label {
       display: inline-block;
-      padding: 10px 20px;
-      background-color: var(--whatsapp-green);
+      padding: 11px 26px;
+      background: linear-gradient(92deg, #25d366 40%, #128c4a 100%);
       color: white;
       border-radius: 25px;
+      font-size: 1em;
+      font-weight: 600;
       cursor: pointer;
-      font-weight: bold;
-      margin-bottom: 20px;
-      transition: background-color 0.3s ease;
+      margin-bottom: 18px;
+      letter-spacing: 0.5px;
+      transition: filter 0.25s, transform 0.18s, background 0.28s;
+      box-shadow: 0 2px 8px -4px #25d36655;
     }
-
     .file-label:hover {
-      background-color: #128c4a;
+      filter: brightness(1.2) saturate(1.2);
+      transform: scale(1.04);
+      background: linear-gradient(92deg, #1ebc5b 45%, #0f6450 100%);
     }
 
-    #profilePic {
-      display: none;
-    }
+    #profilePic { display: none; }
 
     #fileName {
       margin-bottom: 15px;
       font-size: 14px;
-      color: #333;
+      color: #167050;
+      opacity: 0.9;
+      letter-spacing: 0.2px;
+      background: #eafff1;
+      border-radius: 12px;
+      padding: 5.5px 10px;
+      display: inline-block;
+      min-width: 120px;
     }
 
     button {
       width: 100%;
-      background-color: var(--whatsapp-green);
-      color: white;
-      padding: 12px;
+      background: linear-gradient(90deg, #25d366 65%, #128c4a 100%);
+      color: #fff;
+      padding: 13px 0;
       border: none;
       border-radius: 25px;
-      font-size: 18px;
-      cursor: pointer;
+      font-size: 1.15em;
+      letter-spacing: 0.4px;
       font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 2px 12px -4px #25d36650;
+      transition: background 0.27s, box-shadow 0.23s, transform 0.12s;
     }
-
     button:hover {
-      background-color: #128c4a;
+      background: linear-gradient(90deg, #128c4a 40%, #25d366 100%);
+      box-shadow: 0 6px 28px -10px #25d366aa;
+      transform: translateY(-1.5px) scale(1.02);
     }
 
     p {
-      margin-top: 20px;
-      font-size: 14px;
+      margin-top: 21px;
+      font-size: 15px;
+      color: #263238dd;
+      letter-spacing: 0.1px;
     }
 
     a {
-      color: var(--whatsapp-green);
+      color: #128c4a;
       text-decoration: none;
       font-weight: 600;
+      border-bottom: 1px solid #25d36630;
+      transition: color 0.25s, border-bottom 0.12s;
     }
-
     a:hover {
-      text-decoration: underline;
+      color: #25d366;
+      border-bottom: 2px solid #25d366bb;
+      text-decoration: none;
     }
   </style>
 </head>
@@ -115,7 +160,7 @@
     <form id="registerForm" enctype="multipart/form-data">
       <input type="text" id="username" placeholder="Username" required />
       <input type="password" id="password" placeholder="Password" required />
-      
+
       <label for="profilePic" class="file-label">Choose Profile Picture</label>
       <input type="file" id="profilePic" accept="image/*" />
       <div id="fileName">No file chosen</div>
@@ -128,7 +173,6 @@
   <script>
     const profilePicInput = document.getElementById('profilePic');
     const fileNameDisplay = document.getElementById('fileName');
-
     profilePicInput.addEventListener('change', () => {
       const fileName = profilePicInput.files[0]?.name || "No file chosen";
       fileNameDisplay.textContent = fileName;
