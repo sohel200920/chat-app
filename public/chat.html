@@ -7,207 +7,549 @@
   <title>Chat | Chat App</title>
   <style>
     :root {
-      --primary-bg: #111b21;
-      --secondary-bg: #202c33;
+      --primary-bg: linear-gradient(120deg, #111b21 70%, #202c33 100%);
+      --secondary-bg: rgba(32, 44, 51, 0.89);
       --text-color: #e9edef;
       --accent-green: #25d366;
-      --message-bg-you: #005c4b;
-      --message-bg-other: #2a3942;
+      --accent-gradient: linear-gradient(90deg, #25d366 50%, #075e54 100%);
+      --sidebar-glass: rgba(21, 34, 29, 0.86);
+      --sidebar-blur: 20px;
+      --message-bg-you: linear-gradient(95deg, #07847e 55%, #25d366 90%);
+      --message-bg-other: #232f34ee;
       --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
-    * {
-      box-sizing: border-box;
-    }
-
+    html,
     body {
+      height: 100%;
       margin: 0;
       padding: 0;
       font-family: var(--font-family);
-      height: 100vh;
-      display: flex;
       background: var(--primary-bg);
       color: var(--text-color);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: row;
+      height: 100vh;
+      overflow: hidden;
+      width: 100vw;
     }
 
     #sidebar {
-      width: 280px;
-      background: var(--secondary-bg);
-      border-right: 1px solid #2f3b43;
+      width: 295px;
+      min-width: 225px;
+      max-width: 325px;
+      background: var(--sidebar-glass);
+      backdrop-filter: blur(var(--sidebar-blur));
+      border-right: 1px solid #2e4634aa;
       display: flex;
       flex-direction: column;
+      z-index: 9;
+      position: relative;
+      transition: width 0.3s;
+      box-shadow: 1.5px 5px 28px -12px #00000019;
+      animation: sidebar-in 0.6s;
+    }
+
+    @keyframes sidebar-in {
+      from {
+        opacity: 0;
+        transform: translateX(-40px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
     }
 
     #sidebar header {
-      background: var(--accent-green);
-      color: white;
-      padding: 20px;
-      font-size: 22px;
-      font-weight: bold;
-      text-align: center;
+      background: var(--accent-gradient);
+      color: #fff;
+      padding: 23px 10px 20px 16px;
+      font-size: 25px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 3px 18px -10px #25d36666;
+      letter-spacing: 1px;
+      border-bottom: 1.5px solid #1bb167cc;
+    }
+
+    /* Sidebar toggle button for mobile */
+    #sidebarToggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 26px;
+      color: #25d366;
+      cursor: pointer;
+      padding: 0 12px 0 15px;
+      line-height: 1;
+      user-select: none;
+      transition: color 0.22s;
+    }
+
+    #sidebarToggle:hover {
+      color: #1ebc51;
     }
 
     #loggedInUser {
-      background: #b30000;
-      color: white;
-      font-weight: bold;
+      background: linear-gradient(90deg, #161b20 80%, #25d36633 100%);
+      color: #fff;
+      font-weight: 600;
       text-align: center;
-      padding: 10px;
+      padding: 12px 0 10px 0;
+      margin-bottom: 2px;
+      letter-spacing: 0.2px;
+      font-size: 14.8px;
+      border-bottom: 1.1px solid #222c3268;
+      box-shadow: 0 2px 8px -4px #15c15122;
+      user-select: none;
     }
 
     #userList {
       flex-grow: 1;
       overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: #086b47 #171d22;
+      padding: 8px 0;
+      background: rgba(21, 34, 29, 0.95);
+      transition: transform 0.2s ease;
+    }
+
+    #userList::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    #userList::-webkit-scrollbar-thumb {
+      background: #086b47;
+      border-radius: 7px;
+    }
+
+    /* Default hidden in mobile when sidebar not toggled */
+    #userList.hidden {
+      transform: translateY(-9999px);
+      pointer-events: none;
     }
 
     .user {
-      padding: 12px 16px;
-      border-bottom: 1px solid #2f3b43;
-      cursor: pointer;
+      padding: 12px 18px;
       display: flex;
       align-items: center;
-      color: white;
-      gap: 12px;
+      color: #e9edef;
+      gap: 15px;
+      cursor: pointer;
+      border-bottom: 1px solid #0c121891;
+      border-radius: 8px;
+      margin: 4px 8px;
+      background: rgba(32, 44, 51, 0.85);
+      transition: background 0.25s, box-shadow 0.25s;
+      user-select: none;
+    }
+
+    .user:hover,
+    .user.active {
+      background: #19d28d1a;
+      box-shadow: 0 3px 15px -5px #25d366aa;
+      color: #ffffff;
     }
 
     .user img {
-      width: 40px;
-      height: 40px;
+      width: 42px;
+      height: 42px;
       border-radius: 50%;
       object-fit: cover;
+      box-shadow: 0 0 0 2px #25d36633, 0 4px 15px #0001;
+      background: #f4f4f4;
+      transition: box-shadow 0.3s;
     }
 
-    .user:hover {
-      background: #1f2c34;
+    .user.active img,
+    .user:hover img {
+      box-shadow: 0 0 0 3.5px #25d366bb, 0 4px 15px #25d36644;
+      filter: brightness(1.05);
     }
 
-    .user.active {
-      background: var(--accent-green);
-      color: white;
+    .user span {
+      font-size: 16px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .notification-badge {
-      background: red;
-      color: white;
+      background: #ea085c;
+      color: #fff;
       font-size: 12px;
-      font-weight: bold;
-      padding: 3px 8px;
-      border-radius: 50%;
+      font-weight: 700;
+      padding: 4px 9px;
+      border-radius: 999px;
       margin-left: auto;
+      margin-right: 8px;
+      box-shadow: 0 1px 7px #e7145a25;
       display: none;
+      transition: transform 0.22s ease;
     }
 
     #mainChat {
       flex-grow: 1;
+      min-width: 0;
       display: flex;
       flex-direction: column;
+      background: #121b23;
+      height: 100vh;
+      transition: width 0.3s;
+      animation: chatfadein 0.44s;
+    }
+
+    @keyframes chatfadein {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
     }
 
     #chatHeader {
       background: var(--secondary-bg);
-      color: white;
-      padding: 15px 20px;
+      color: #f4fff7;
+      padding: 19px 35px 15px 32px;
       font-weight: bold;
-      font-size: 18px;
-      border-bottom: 1px solid #2f3b43;
+      font-size: 19.5px;
+      letter-spacing: 0.5px;
+      border-bottom: 1.5px solid #234c35ee;
+      box-shadow: 0 3px 14px -10px #25d36644;
+      min-height: 34px;
+      user-select: none;
     }
 
     #chatMessages {
       flex-grow: 1;
-      padding: 15px;
+      padding: 18px 20px 38px 36px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 16px;
+      scrollbar-width: thin;
+      scrollbar-color: #0e4133 #2b3c45;
+      background: linear-gradient(120deg, #101e23 80%, #1a4633 110%);
+      min-height: 0;
+      max-height: 75vh;
+    }
+
+    #chatMessages::-webkit-scrollbar {
+      width: 8px;
+      background: #222;
+    }
+
+    #chatMessages::-webkit-scrollbar-thumb {
+      background: #25d36677;
+      border-radius: 13px;
     }
 
     .message {
-      display: inline-block;
-      max-width: 70%;
-      word-wrap: break-word;
-    }
-
-    .message.other {
-      flex-direction: row;
-      align-self: flex-start;
-    }
-
-    .message.you {
-      flex-direction: row-reverse;
-      align-self: flex-end;
+      display: flex;
+      align-items: flex-end;
+      max-width: 72%;
+      min-width: 115px;
+      position: relative;
+      word-break: break-word;
+      animation: msgin 0.28s;
+      opacity: 0.95;
     }
 
     .message img {
-      width: 32px;
-      height: 32px;
+      width: 39px;
+      height: 39px;
       border-radius: 50%;
-      margin: 0 10px;
       object-fit: cover;
+      background: #fff;
+      box-shadow: 0 2px 10px #25d36617;
+      margin: 0 12px;
+      border: 2px solid #19e2a2a1;
+      transition: box-shadow 0.22s;
+      flex-shrink: 0;
     }
 
-    .message .text {
+    .message.other {
+      align-self: flex-start;
+      flex-direction: row;
+    }
+
+    .message.you {
+      align-self: flex-end;
+      flex-direction: row-reverse;
+    }
+
+    .text {
       background: var(--message-bg-other);
-      color: white;
-      padding: 10px 15px;
-      border-radius: 15px;
-      font-size: 14px;
-      line-height: 1.4;
-      max-width: 100%;
-      word-wrap: break-word;
+      color: #f4fff8;
+      padding: 13px 17px;
+      border-radius: 17px 17px 17px 7px;
+      font-size: 16.5px;
+      line-height: 1.6;
+      min-width: 10px;
+      box-shadow: 0 2px 16px -8px #0c3a2f88;
+      margin-bottom: 3px;
+      transition: background 0.22s;
+      position: relative;
+      word-break: break-word;
+      overflow-wrap: break-word;
     }
 
     .message.you .text {
       background: var(--message-bg-you);
+      color: #e7ffee;
+      border-radius: 17px 17px 7px 17px;
+      font-weight: 500;
+      box-shadow: 0 2px 16px -7px #25d36633;
+    }
+
+    .seenText {
+      font-size: 11.4px;
+      color: #b6ffd6;
+      text-align: right;
+      margin-top: 2px;
+      font-style: italic;
+      opacity: 0.78;
+      user-select: none;
     }
 
     #chatInput {
-      padding: 10px 15px;
+      padding: 8.5px 25px 13px 25px;
       background: var(--secondary-bg);
-      border-top: 1px solid #2f3b43;
+      border-top: 1.5px solid #234c35cd;
       display: flex;
+      gap: 13px;
+      position: relative;
+      z-index: 32;
+      min-height: 63px;
+      align-items: center;
+      flex-shrink: 0;
     }
 
     #messageInput {
       flex-grow: 1;
-      padding: 12px 15px;
-      border-radius: 25px;
+      font-size: 17px;
+      padding: 14px 24px;
+      background: #1d2328;
+      color: #e8f8ee;
       border: none;
-      font-size: 16px;
+      border-radius: 25px;
+      margin-right: 9px;
       outline: none;
+      transition: box-shadow 0.23s, background 0.22s;
+      min-width: 0;
+    }
+
+    #messageInput:focus {
+      background: #263e3a;
+      box-shadow: 0 0 0 2.5px #25d36677;
     }
 
     #sendBtn {
-      background: var(--accent-green);
-      color: white;
+      background: var(--accent-gradient);
+      color: #fff;
       border: none;
-      padding: 12px 20px;
-      margin-left: 10px;
+      padding: 14px 29px;
       border-radius: 25px;
-      font-size: 16px;
-      font-weight: bold;
+      font-size: 17.3px;
+      font-weight: 700;
+      letter-spacing: 0.14px;
       cursor: pointer;
+      box-shadow: 0 4px 16px -8px #25d366a0;
+      transition: background 0.22s, transform 0.13s, box-shadow 0.21s;
+      flex-shrink: 0;
     }
 
-    .seenText {
-      font-size: 11px;
-      color: #aaa;
-      text-align: right;
+    #sendBtn:hover {
+      filter: brightness(1.07);
+      transform: scale(1.035);
+      background: linear-gradient(95deg, #1eac5b 40%, #25d366 100%);
+      box-shadow: 0 7px 39px -16px #25d366ed;
+    }
+
+    /* === Responsive CSS: MOBILE === */
+    @media (max-width: 830px) {
+      #sidebar {
+        min-width: 65px;
+        max-width: 95px;
+        width: 70px;
+        transition: width 0.3s;
+      }
+
+      #sidebar header {
+        font-size: 0;
+        padding: 16px 0;
+      }
+
+      #sidebarToggle {
+        display: inline-block;
+      }
+
+      .user {
+        padding: 9px 4px;
+        gap: 5px;
+      }
+
+      .user span {
+        font-size: 0;
+      }
+
+      .user img {
+        width: 36px;
+        height: 36px;
+      }
+    }
+
+    @media (max-width: 650px) {
+      body {
+        flex-direction: column;
+        height: 100vh;
+        min-height: 100svh;
+        width: 100vw;
+        max-width: 100vw;
+      }
+
+      #sidebar {
+        position: fixed;
+        width: 100vw;
+        min-width: 0;
+        max-width: 100vw;
+        left: 0;
+        top: 0;
+        bottom: unset;
+        height: 65px;
+        flex-direction: row;
+        border-radius: 0 0 16px 16px;
+        box-shadow: 0 9px 24px -13px #0006;
+        z-index: 1002;
+        border-right: none;
+        border-bottom: 1.5px solid #25d36622;
+        background: rgba(24, 44, 39, 0.93);
+        /* Show sidebar height */
+      }
+
+      #sidebar header {
+        font-size: 20px;
+        flex: 1.5;
+        padding: 14px 0;
+        border-bottom: none;
+        border-right: 1px solid #25d36630;
+        background: none;
+        text-align: left;
+      }
+
+      #loggedInUser {
+        flex: 2;
+        font-size: 13px;
+        padding: 18px 0;
+        border-bottom: none;
+        border-right: 1px solid #25d36625;
+        background: none;
+      }
+
+      #userList {
+        position: fixed;
+        top: 65px;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(21, 34, 29, 0.98);
+        z-index: 1001;
+        padding: 10px 0 65px 0;
+        display: flex;
+        flex-direction: column;
+      }
+
+      #chatHeader {
+        font-size: 17px;
+        padding: 13px 7vw 13px 5vw;
+      }
+
+      #chatMessages {
+        padding: 13px 4vw 68px 5vw;
+        gap: 9px;
+        max-height: 62vh;
+      }
+
+      .message img {
+        width: 32px;
+        height: 32px;
+      }
+
+      .text {
+        font-size: 15.5px;
+        padding: 9px 13px;
+        border-radius: 15px 15px 15px 6px;
+      }
+
+      .message.you .text {
+        border-radius: 15px 15px 6px 15px;
+      }
+
+      #chatInput {
+        padding: 6px 2vw 7px 2vw;
+        min-height: 52px;
+        background: var(--secondary-bg);
+        gap: 5px;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+      }
+
+      #messageInput {
+        font-size: 15px;
+        padding: 11px 13px;
+      }
+
+      #sendBtn {
+        font-size: 16px;
+        padding: 11px 18px;
+      }
+    }
+
+    /* Full width for .message bubbles on smallest screens */
+    @media (max-width: 410px) {
+      #chatMessages {
+        padding: 7px 1vw 64px 3vw;
+      }
+
+      .message {
+        max-width: 98vw;
+      }
+
+      #chatInput {
+        padding: 4px 1vw 7px 1vw;
+      }
     }
   </style>
 </head>
 
 <body>
   <div id="sidebar">
-    <header>Contacts</header>
+    <header>
+      Contacts
+      <button id="sidebarToggle" aria-label="Toggle contacts list" title="Open contacts">☰</button>
+    </header>
     <div id="loggedInUser"></div>
-    <div id="userList"></div>
+    <div id="userList" class="hidden"></div>
   </div>
-
   <div id="mainChat">
     <div id="chatHeader">Select a user to chat</div>
     <div id="chatMessages"></div>
     <div id="chatInput" style="display:none;">
-      <input type="text" id="messageInput" placeholder="Type a message" />
+      <input type="text" id="messageInput" placeholder="Type a message" autocomplete="off" />
       <button id="sendBtn">Send</button>
     </div>
   </div>
@@ -221,126 +563,158 @@
       window.location.href = 'chat.html';
     }
 
-
     document.getElementById('loggedInUser').textContent = `Logged in as: ${username}`;
-
     let currentChatUser = null;
     let usersData = [];
 
     async function loadUsers() {
-      const res = await fetch(`/users/${username}`);
-      const users = await res.json();
-      usersData = users;
+      try {
+        const res = await fetch(`/users/${username}`);
+        if (!res.ok) throw new Error("Failed to fetch users");
+        const users = await res.json();
+        usersData = users;
+        const userList = document.getElementById('userList');
+        userList.innerHTML = '';
+        users.forEach(user => {
+          const div = document.createElement('div');
+          div.classList.add('user');
 
-      const userList = document.getElementById('userList');
-      userList.innerHTML = '';
+          const img = document.createElement('img');
+          img.src = user.profilePic ? `/uploads/${user.profilePic}` : 'default.png';
+          img.onerror = () => img.src = 'default.png';
 
-      users.forEach(user => {
-        const div = document.createElement('div');
-        div.classList.add('user');
+          const name = document.createElement('span');
+          name.textContent = user.username;
+          name.title = user.username; // full tooltip
 
-        const img = document.createElement('img');
-        img.src = user.profilePic ? `/uploads/${user.profilePic}` : 'default.png';
-        img.onerror = () => img.src = 'default.png';
-
-        const name = document.createElement('span');
-        name.textContent = user.username;
-
-        const badge = document.createElement('span');
-        badge.classList.add('notification-badge');
-        badge.textContent = '1';
-        badge.style.display = 'none';
-
-        div.appendChild(img);
-        div.appendChild(name);
-        div.appendChild(badge);
-
-        div.addEventListener('click', () => {
-          openChat(user.username, div);
+          const badge = document.createElement('span');
+          badge.classList.add('notification-badge');
+          badge.textContent = '1';
           badge.style.display = 'none';
-        });
 
-        userList.appendChild(div);
-      });
+          div.appendChild(img);
+          div.appendChild(name);
+          div.appendChild(badge);
+
+          div.addEventListener('click', () => {
+            openChat(user.username, div);
+            badge.style.display = 'none';
+          });
+
+          userList.appendChild(div);
+        });
+      } catch (e) {
+        console.error(e);
+      }
     }
 
     async function openChat(userToChat, userDiv) {
       currentChatUser = userToChat;
       document.getElementById('chatHeader').textContent = 'Chat with ' + userToChat;
       document.getElementById('chatInput').style.display = 'flex';
-
       document.querySelectorAll('.user').forEach(u => u.classList.remove('active'));
       userDiv.classList.add('active');
-
       loadMessages();
+
+      // On mobile close sidebar when user selected
+      if (window.innerWidth <= 650) {
+        document.getElementById('sidebar').classList.remove('show-users');
+        document.getElementById('userList').classList.add('hidden');
+        sidebarToggle.title = 'Open contacts';
+        sidebarToggle.textContent = '☰';
+      }
     }
 
     async function loadMessages() {
       if (!currentChatUser) return;
-      const res = await fetch(`/chat/${username}/${currentChatUser}`);
-      const messages = await res.json();
-
-      const chatMessages = document.getElementById('chatMessages');
-      chatMessages.innerHTML = '';
-
-      messages.forEach(msg => {
-        const div = document.createElement('div');
-        div.classList.add('message');
-        div.classList.add(msg.from === username ? 'you' : 'other');
-
-        const img = document.createElement('img');
-        const sender = msg.from === username ? username : currentChatUser;
-        const userInfo = usersData.find(u => u.username === sender);
-        img.src = userInfo?.profilePic ? `/uploads/${userInfo.profilePic}` : 'default.png';
-        img.onerror = () => img.src = 'default.png';
-
-        const text = document.createElement('div');
-        text.classList.add('text');
-        text.textContent = msg.message;
-
-        div.appendChild(img);
-        div.appendChild(text);
-        chatMessages.appendChild(div);
-      });
-
-      chatMessages.scrollTop = chatMessages.scrollHeight;
+      try {
+        const res = await fetch(`/chat/${username}/${currentChatUser}`);
+        if (!res.ok) throw new Error("Failed to load messages");
+        const messages = await res.json();
+        const chatMessages = document.getElementById('chatMessages');
+        chatMessages.innerHTML = '';
+        messages.forEach((msg, index) => {
+          const div = document.createElement('div');
+          div.classList.add('message');
+          div.classList.add(msg.from === username ? 'you' : 'other');
+          const img = document.createElement('img');
+          const sender = msg.from === username ? username : currentChatUser;
+          const userInfo = usersData.find(u => u.username === sender);
+          img.src = userInfo?.profilePic ? `/uploads/${userInfo.profilePic}` : 'default.png';
+          img.onerror = () => img.src = 'default.png';
+          const text = document.createElement('div');
+          text.classList.add('text');
+          text.textContent = msg.message;
+          div.appendChild(img);
+          div.appendChild(text);
+          if (msg.from === username && index === messages.length - 1 && msg.seen)
+            div.innerHTML += '<div class="seenText">Seen just now</div>';
+          chatMessages.appendChild(div);
+        });
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      } catch (e) {
+        console.error(e);
+      }
     }
 
     async function sendMessage() {
       const input = document.getElementById('messageInput');
       const message = input.value.trim();
       if (!message || !currentChatUser) return;
-
-      const res = await fetch('/send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ from: username, to: currentChatUser, message }),
-      });
-
-      if (res.ok) {
-        input.value = '';
-        loadMessages();
-      } else {
+      try {
+        const res = await fetch('/send', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ from: username, to: currentChatUser, message }),
+        });
+        if (res.ok) {
+          input.value = '';
+          loadMessages();
+        } else {
+          alert("Failed to send message");
+        }
+      } catch (e) {
         alert("Failed to send message");
+        console.error(e);
       }
     }
 
     async function checkNewMessages() {
-      const res = await fetch(`/chat/${username}`);
-      const msgs = await res.json();
-
-      document.querySelectorAll('.user').forEach(div => {
-        const target = div.querySelector('span').textContent;
-        const badge = div.querySelector('.notification-badge');
-        const count = msgs.filter(m => m.from === target && m.to === username).length;
-        if (target !== currentChatUser && count > 0) {
-          badge.textContent = count;
-          badge.style.display = 'inline-block';
-        } else {
-          badge.style.display = 'none';
-        }
-      });
+      try {
+        const res = await fetch(`/chat/${username}`);
+        if (!res.ok) throw new Error("Failed to check messages");
+        const msgs = await res.json();
+        document.querySelectorAll('.user').forEach(div => {
+          const target = div.querySelector('span').textContent;
+          const badge = div.querySelector('.notification-badge');
+          const count = msgs.filter(m => m.from === target && m.to === username).length;
+          if (target !== currentChatUser && count > 0) {
+            badge.textContent = count;
+            badge.style.display = 'inline-block';
+          } else {
+            badge.style.display = 'none';
+          }
+        });
+      } catch (e) {
+        console.error(e);
+      }
     }
+
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const userList = document.getElementById('userList');
+    const sidebar = document.getElementById('sidebar');
+
+    sidebarToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('show-users');
+      userList.classList.toggle('hidden');
+      if (sidebar.classList.contains('show-users')) {
+        sidebarToggle.title = 'Close contacts';
+        sidebarToggle.textContent = '×';
+      } else {
+        sidebarToggle.title = 'Open contacts';
+        sidebarToggle.textContent = '☰';
+      }
+    });
 
     document.getElementById('sendBtn').addEventListener('click', sendMessage);
     document.getElementById('messageInput').addEventListener('keypress', (e) => {
@@ -356,9 +730,6 @@
     }, 2000);
 
     loadUsers();
-    if (msg.from === username && index === messages.length - 1 && msg.seen)
-      div.innerHTML += '<div class="seenText">Seen just now</div>';
-
   </script>
 </body>
 
