@@ -133,6 +133,15 @@
       transform: translateY(-1.5px) scale(1.02);
     }
 
+    /* Logout button style */
+    #logoutBtn {
+      margin-top: 20px;
+      background: linear-gradient(90deg, #ff4444 60%, #aa0000 100%);
+    }
+    #logoutBtn:hover {
+      background: linear-gradient(90deg, #cc0000 40%, #ff4444 100%);
+    }
+
     p {
       margin-top: 21px;
       font-size: 15px;
@@ -167,10 +176,15 @@
 
       <button type="submit">Register</button>
     </form>
+
     <p>Already have an account? <a href="login.html">Login here</a></p>
+
+    <!-- 🔴 Logout button -->
+    <button id="logoutBtn">Logout</button>
   </div>
 
   <script>
+    // File input preview
     const profilePicInput = document.getElementById('profilePic');
     const fileNameDisplay = document.getElementById('fileName');
     profilePicInput.addEventListener('change', () => {
@@ -178,6 +192,7 @@
       fileNameDisplay.textContent = fileName;
     });
 
+    // Register form submit
     document.getElementById('registerForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const username = document.getElementById('username').value.trim();
@@ -196,12 +211,27 @@
 
       if (res.ok) {
         alert('Registered successfully!');
-        window.location.href = 'login.html';
+        // ✅ Store username in localStorage
+        localStorage.setItem('username', username);
+        window.location.href = 'chat.html';
       } else {
         const data = await res.json();
         alert(data.message || 'Registration failed');
       }
     });
+
+    // 🔴 Logout logic
+    const logoutBtn = document.getElementById('logoutBtn');
+    logoutBtn.addEventListener('click', () => {
+      localStorage.removeItem('username');
+      alert("You have been logged out.");
+      window.location.href = 'login.html';
+    });
+
+    // Only show logout button if user already logged in
+    if (!localStorage.getItem('username')) {
+      logoutBtn.style.display = 'none';
+    }
   </script>
 </body>
 </html>
