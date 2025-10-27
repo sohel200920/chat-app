@@ -1,237 +1,414 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Register | Chat App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Chat | Chat App</title>
   <style>
     :root {
-      --whatsapp-green: #25d366;
-      --whatsapp-dark-green: #075e54;
-      --whatsapp-light-green: #e9fff1;
-      --glass-white: rgba(255,255,255,0.85);
-      --primary-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
-      --focus-shadow: 0 0 0 3px rgba(37,211,102,0.23);
-      --border-glow: 0 0 0 3px #25d36688;
+      --primary-bg: #111b21;
+      --secondary-bg: #202c33;
+      --text-color: #e9edef;
+      --accent-green: #25d366;
+      --message-bg-you: #005c4b;
+      --message-bg-other: #1f2c34;
+      --sidebar-bg: #1f2c34;
       --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
     body {
-      min-height: 100vh;
+      height: 100%;
       margin: 0;
-      padding: 0;
-      background: linear-gradient(135deg, var(--whatsapp-dark-green) 0%, var(--whatsapp-green) 100%);
-      display: flex;
-      justify-content: center;
-      align-items: center;
       font-family: var(--font-family);
-      animation: gradient-flow 7s ease-in-out infinite alternate;
-    }
-
-    @keyframes gradient-flow {
-      0% { background-position: 0 50%; }
-      100% { background-position: 100% 50%; }
-    }
-
-    .container {
-      background: var(--glass-white);
-      box-shadow: var(--primary-shadow);
-      backdrop-filter: blur(18px);
-      border-radius: 18px;
-      padding: 38px 44px 36px 44px;
-      width: 370px;
-      text-align: center;
-      border: 1px solid #e8ffed;
-      position: relative;
+      background: var(--primary-bg);
+      color: var(--text-color);
       overflow: hidden;
-      transition: box-shadow 0.35s;
-    }
-    .container:hover {
-      box-shadow: 0 16px 48px 0 rgba(37,211,102,0.12), 0 1.5px 18px 0 rgba(7,94,84,0.11);
     }
 
-    h2 {
-      font-size: 2.2em;
-      color: var(--whatsapp-dark-green);
-      letter-spacing: 1px;
-      margin-bottom: 24px;
-      font-weight: 700;
-      text-shadow: 0 2px 16px #25d36622;
+    body {
+      display: flex;
+      height: 100vh;
+      width: 100vw;
     }
 
-    input[type=text], input[type=password] {
-      width: 100%;
-      padding: 14px 18px;
-      margin: 10px 0 26px 0;
-      border: none;
-      border-radius: 25px;
-      font-size: 18px;
-      background: #f2faf6;
-      transition: box-shadow 0.26s, border 0.22s, background 0.4s;
-      box-shadow: 0 2px 4px rgba(7,94,84,0.05);
-      color: #263238;
-      outline: none;
-    }
-    input[type=text]:focus, input[type=password]:focus {
-      background: #e6fcf4;
-      box-shadow: var(--focus-shadow), var(--border-glow);
-      border: 1.5px solid var(--whatsapp-green);
+    /* Sidebar */
+    #sidebar {
+      width: 280px;
+      background: var(--sidebar-bg);
+      border-right: 1px solid #2a3942;
+      display: flex;
+      flex-direction: column;
+      transition: left 0.3s ease;
     }
 
-    .file-label {
-      display: inline-block;
-      padding: 11px 26px;
-      background: linear-gradient(92deg, #25d366 40%, #128c4a 100%);
-      color: white;
-      border-radius: 25px;
-      font-size: 1em;
-      font-weight: 600;
-      cursor: pointer;
-      margin-bottom: 18px;
-      letter-spacing: 0.5px;
-      transition: filter 0.25s, transform 0.18s, background 0.28s;
-      box-shadow: 0 2px 8px -4px #25d36655;
-    }
-    .file-label:hover {
-      filter: brightness(1.2) saturate(1.2);
-      transform: scale(1.04);
-      background: linear-gradient(92deg, #1ebc5b 45%, #0f6450 100%);
-    }
-
-    #profilePic { display: none; }
-
-    #fileName {
-      margin-bottom: 15px;
-      font-size: 14px;
-      color: #167050;
-      opacity: 0.9;
-      letter-spacing: 0.2px;
-      background: #eafff1;
-      border-radius: 12px;
-      padding: 5.5px 10px;
-      display: inline-block;
-      min-width: 120px;
-    }
-
-    button {
-      width: 100%;
-      background: linear-gradient(90deg, #25d366 65%, #128c4a 100%);
+    #sidebar header {
+      background: #075e54;
       color: #fff;
-      padding: 13px 0;
-      border: none;
-      border-radius: 25px;
-      font-size: 1.15em;
-      letter-spacing: 0.4px;
-      font-weight: bold;
-      cursor: pointer;
-      box-shadow: 0 2px 12px -4px #25d36650;
-      transition: background 0.27s, box-shadow 0.23s, transform 0.12s;
-    }
-    button:hover {
-      background: linear-gradient(90deg, #128c4a 40%, #25d366 100%);
-      box-shadow: 0 6px 28px -10px #25d366aa;
-      transform: translateY(-1.5px) scale(1.02);
-    }
-
-    /* Logout button style */
-    #logoutBtn {
-      margin-top: 20px;
-      background: linear-gradient(90deg, #ff4444 60%, #aa0000 100%);
-    }
-    #logoutBtn:hover {
-      background: linear-gradient(90deg, #cc0000 40%, #ff4444 100%);
-    }
-
-    p {
-      margin-top: 21px;
-      font-size: 15px;
-      color: #263238dd;
-      letter-spacing: 0.1px;
-    }
-
-    a {
-      color: #128c4a;
-      text-decoration: none;
+      padding: 14px 16px;
+      font-size: 20px;
       font-weight: 600;
-      border-bottom: 1px solid #25d36630;
-      transition: color 0.25s, border-bottom 0.12s;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 10px #0003;
     }
-    a:hover {
-      color: #25d366;
-      border-bottom: 2px solid #25d366bb;
-      text-decoration: none;
+
+    #sidebarToggle {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 22px;
+      cursor: pointer;
+    }
+
+    #loggedInUser {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 15px;
+      border-bottom: 1px solid #2a3942;
+    }
+
+    #userProfilePic {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      object-fit: cover;
+      box-shadow: 0 0 0 3px #25d36655;
+    }
+
+    #userList {
+      flex-grow: 1;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: #2a3942 #111b21;
+    }
+
+    .user {
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      border-bottom: 1px solid #2a3942;
+      transition: background 0.2s;
+    }
+
+    .user:hover,
+    .user.active {
+      background: #0b141a;
+    }
+
+    .user img {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .user span {
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    /* Chat area */
+    #mainChat {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: var(--primary-bg);
+    }
+
+    #chatHeader {
+      background: var(--secondary-bg);
+      padding: 15px;
+      font-size: 18px;
+      font-weight: 600;
+      border-bottom: 1px solid #2a3942;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    #mobileMenu {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 22px;
+      display: none;
+      cursor: pointer;
+    }
+
+    #chatMessages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: #0b141a;
+    }
+
+    .message {
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+      max-width: 70%;
+    }
+
+    .message img {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .message.you {
+      align-self: flex-end;
+      flex-direction: row-reverse;
+    }
+
+    .message.you .text {
+      background: var(--message-bg-you);
+      color: #e9edef;
+      border-radius: 18px 18px 5px 18px;
+    }
+
+    .message.other .text {
+      background: var(--message-bg-other);
+      border-radius: 18px 18px 18px 5px;
+    }
+
+    .text {
+      padding: 10px 14px;
+      font-size: 16px;
+      line-height: 1.4;
+    }
+
+    #chatInput {
+      display: flex;
+      padding: 10px;
+      border-top: 1px solid #2a3942;
+      background: var(--secondary-bg);
+      align-items: center;
+      gap: 10px;
+    }
+
+    #messageInput {
+      flex: 1;
+      padding: 12px 16px;
+      border-radius: 25px;
+      border: none;
+      outline: none;
+      background: #2a3942;
+      color: #fff;
+      font-size: 16px;
+    }
+
+    #sendBtn {
+      background: var(--accent-green);
+      color: #fff;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 25px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    #sendBtn:hover {
+      background: #1db954;
+    }
+
+    /* Responsive mobile */
+    @media (max-width: 700px) {
+      #sidebar {
+        position: fixed;
+        left: -280px;
+        top: 0;
+        bottom: 0;
+        z-index: 100;
+        height: 100%;
+      }
+
+      #sidebar.show {
+        left: 0;
+      }
+
+      #mobileMenu {
+        display: inline-block;
+      }
+
+      #chatHeader {
+        justify-content: flex-start;
+        gap: 10px;
+      }
+
+      #chatTitle {
+        flex: 1;
+      }
+
+      #chatInput {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: var(--secondary-bg);
+        padding: 8px 10px;
+        z-index: 99;
+      }
+
+      #chatMessages {
+        padding-bottom: 70px;
+      }
     }
   </style>
 </head>
+
 <body>
-  <div class="container">
-    <h2>Register</h2>
-    <form id="registerForm" enctype="multipart/form-data">
-      <input type="text" id="username" placeholder="Username" required />
-      <input type="password" id="password" placeholder="Password" required />
+  <div id="sidebar">
+    <header>
+      Contacts
+      <button id="sidebarToggle">×</button>
+    </header>
+    <div id="loggedInUser">
+      <img id="userProfilePic" src="default.png" alt="Profile" />
+    </div>
+    <div id="userList"></div>
+  </div>
 
-      <label for="profilePic" class="file-label">Choose Profile Picture</label>
-      <input type="file" id="profilePic" accept="image/*" />
-      <div id="fileName">No file chosen</div>
+  <div id="mainChat">
+    <div id="chatHeader">
+      <button id="mobileMenu">☰</button>
+      <div id="chatTitle">Select a user to chat</div>
+      <button id="logoutBtn"
+        style="background:none;border:1px solid #25d366;color:#25d366;padding:6px 10px;border-radius:8px;">Logout</button>
+    </div>
+    <div id="chatMessages"></div>
+    <div id="chatInput" style="display:none;">
+      <input type="text" id="messageInput" placeholder="Type a message..." autocomplete="off" autocorrect="off"
+        autocapitalize="off" spellcheck="false" />
+      <button id="sendBtn">Send</button>
+    </div>
 
-      <button type="submit">Register</button>
-    </form>
-
-    <p>Already have an account? <a href="login.html">Login here</a></p>
-
-    <!-- 🔴 Logout button -->
-    <button id="logoutBtn">Logout</button>
   </div>
 
   <script>
-    // File input preview
-    const profilePicInput = document.getElementById('profilePic');
-    const fileNameDisplay = document.getElementById('fileName');
-    profilePicInput.addEventListener('change', () => {
-      const fileName = profilePicInput.files[0]?.name || "No file chosen";
-      fileNameDisplay.textContent = fileName;
-    });
+    const username = localStorage.getItem('username');
+    if (!username) window.location.href = 'login.html';
 
-    // Register form submit
-    document.getElementById('registerForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const username = document.getElementById('username').value.trim();
-      const password = document.getElementById('password').value.trim();
-      const profilePic = document.getElementById('profilePic').files[0];
+    let currentChatUser = null;
+    let usersData = [];
 
-      const formData = new FormData();
-      formData.append('username', username);
-      formData.append('password', password);
-      if (profilePic) formData.append('profilePic', profilePic);
+    async function showUserProfilePic() {
+      try {
+        const res = await fetch(`/users/${encodeURIComponent(username)}`);
+        const users = await res.json();
+        const me = users.find(u => u.username === username);
+        const img = document.getElementById('userProfilePic');
+        img.src = me?.profilePic ? `/uploads/${me.profilePic}` : 'default.png';
+      } catch { }
+    }
 
-      const res = await fetch('/register', {
-        method: 'POST',
-        body: formData,
+    async function loadUsers() {
+      const res = await fetch(`/users/${encodeURIComponent(username)}`);
+      const users = await res.json();
+      usersData = users;
+      renderUsers(users);
+    }
+
+    function renderUsers(users) {
+      const list = document.getElementById('userList');
+      list.innerHTML = '';
+      users.forEach(u => {
+        const div = document.createElement('div');
+        div.className = 'user';
+        const img = document.createElement('img');
+        img.src = u.profilePic ? `/uploads/${u.profilePic}` : 'default.png';
+        const span = document.createElement('span');
+        span.textContent = u.username;
+        div.append(img, span);
+        div.onclick = () => openChat(u.username, div);
+        list.append(div);
       });
+    }
 
-      if (res.ok) {
-        alert('Registered successfully!');
-        // ✅ Store username in localStorage
-        localStorage.setItem('username', username);
-        window.location.href = 'chat.html';
-      } else {
-        const data = await res.json();
-        alert(data.message || 'Registration failed');
+    async function openChat(user, div) {
+      currentChatUser = user;
+      document.getElementById('chatTitle').textContent = 'Chat with ' + user;
+      document.getElementById('chatInput').style.display = 'flex';
+      document.querySelectorAll('.user').forEach(e => e.classList.remove('active'));
+      div.classList.add('active');
+      await loadMessages();
+      document.getElementById('sidebar').classList.remove('show');
+    }
+
+    async function loadMessages() {
+      if (!currentChatUser) return;
+      const res = await fetch(`/chat/${username}/${currentChatUser}`);
+      const msgs = await res.json();
+      const box = document.getElementById('chatMessages');
+      box.innerHTML = '';
+      msgs.forEach(m => {
+        const div = document.createElement('div');
+        div.className = 'message ' + (m.from === username ? 'you' : 'other');
+        const img = document.createElement('img');
+        const sender = m.from === username ? username : currentChatUser;
+        const info = usersData.find(u => u.username === sender);
+        img.src = info?.profilePic ? `/uploads/${info.profilePic}` : 'default.png';
+        const text = document.createElement('div');
+        text.className = 'text';
+        text.textContent = m.message;
+        div.append(img, text);
+        box.append(div);
+      });
+      box.scrollTop = box.scrollHeight;
+    }
+
+    async function sendMessage() {
+      const input = document.getElementById('messageInput');
+      const msg = input.value.trim();
+      if (!msg || !currentChatUser) return;
+      await fetch('/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ from: username, to: currentChatUser, message: msg })
+      });
+      input.value = '';
+      await loadMessages();
+    }
+
+    document.getElementById('sendBtn').onclick = sendMessage;
+    document.getElementById('messageInput').addEventListener('keypress', e => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        sendMessage();
       }
     });
 
-    // 🔴 Logout logic
-    const logoutBtn = document.getElementById('logoutBtn');
-    logoutBtn.addEventListener('click', () => {
-      localStorage.removeItem('username');
-      alert("You have been logged out.");
+    document.getElementById('logoutBtn').onclick = () => {
+      localStorage.clear();
       window.location.href = 'login.html';
-    });
+    };
 
-    // Only show logout button if user already logged in
-    if (!localStorage.getItem('username')) {
-      logoutBtn.style.display = 'none';
-    }
+    document.getElementById('sidebarToggle').onclick = () => {
+      document.getElementById('sidebar').classList.remove('show');
+    };
+    document.getElementById('mobileMenu').onclick = () => {
+      document.getElementById('sidebar').classList.toggle('show');
+    };
+
+    showUserProfilePic();
+    loadUsers();
+    setInterval(() => {
+      if (currentChatUser) loadMessages();
+    }, 2000);
   </script>
 </body>
+
 </html>
