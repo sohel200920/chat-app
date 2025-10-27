@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Login | Chat App</title>
   <style>
     :root {
@@ -38,7 +38,7 @@
       box-shadow: var(--primary-shadow);
       backdrop-filter: blur(18px);
       border-radius: 18px;
-      padding: 38px 44px 36px 44px;
+      padding: 28px 32px 28px 32px;
       width: 370px;
       text-align: center;
       border: 1px solid #e8ffed;
@@ -46,26 +46,23 @@
       overflow: hidden;
       transition: box-shadow 0.35s;
     }
-    .container:hover {
-      box-shadow: 0 16px 48px 0 rgba(37,211,102,0.12), 0 1.5px 18px 0 rgba(7,94,84,0.11);
-    }
 
     h2 {
       font-size: 2.2em;
       color: var(--whatsapp-dark-green);
       letter-spacing: 1px;
-      margin-bottom: 24px;
+      margin-bottom: 18px;
       font-weight: 700;
       text-shadow: 0 2px 16px #25d36622;
     }
 
     input[type=text], input[type=password] {
       width: 100%;
-      padding: 14px 18px;
-      margin: 10px 0 26px 0;
+      padding: 12px 16px;
+      margin: 10px 0 18px 0;
       border: none;
       border-radius: 25px;
-      font-size: 18px;
+      font-size: 16px;
       background: #f2faf6;
       transition: box-shadow 0.26s, border 0.22s, background 0.4s;
       box-shadow: 0 2px 4px rgba(7,94,84,0.05);
@@ -82,11 +79,11 @@
       width: 100%;
       background: linear-gradient(90deg, #25d366 65%, #128c4a 100%);
       color: #fff;
-      padding: 13px 0;
+      padding: 12px 0;
       border: none;
       border-radius: 25px;
-      font-size: 1.15em;
-      letter-spacing: 0.4px;
+      font-size: 1.05em;
+      letter-spacing: 0.3px;
       font-weight: bold;
       cursor: pointer;
       box-shadow: 0 2px 12px -4px #25d36650;
@@ -99,7 +96,7 @@
     }
 
     p {
-      margin-top: 21px;
+      margin-top: 16px;
       font-size: 15px;
       color: #263238dd;
       letter-spacing: 0.1px;
@@ -127,7 +124,7 @@
       <input type="password" id="password" placeholder="Password" required />
       <button type="submit">Login</button>
     </form>
-    <p>Don't have an account? <a href="register.html">Register here</a></p>
+    <p>Don't have an account? <a href="signup.html">Register here</a></p>
   </div>
 
   <script>
@@ -136,18 +133,27 @@
       const username = document.getElementById('username').value.trim();
       const password = document.getElementById('password').value.trim();
 
-      const res = await fetch('/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
-      });
+      try {
+        const res = await fetch('/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password }),
+        });
 
-      if (res.ok) {
-        localStorage.setItem('username', username);
-        window.location.href = 'chat.html';
-      } else {
-        const data = await res.json();
-        alert(data.message || 'Login failed');
+        if (res.ok) {
+          // Save username in localStorage for auto-login
+          localStorage.setItem('username', username);
+          // optionally remove lastUser so we don't override user's choice later
+          localStorage.removeItem('lastUser');
+          // go to main chat page
+          window.location.href = 'index.html';
+        } else {
+          const data = await res.json();
+          alert(data.message || 'Login failed');
+        }
+      } catch (err) {
+        console.error('Login error:', err);
+        alert('Login failed (server unreachable)');
       }
     });
   </script>
