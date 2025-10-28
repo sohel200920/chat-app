@@ -7,166 +7,217 @@
   <title>Chat | Chat App</title>
   <style>
     :root {
-      --primary-bg: #111b21;
-      --secondary-bg: #202c33;
-      --text-color: #e9edef;
-      --accent-green: #25d366;
-      --message-bg-you: #005c4b;
-      --message-bg-other: #1f2c34;
-      --sidebar-bg: #1f2c34;
-      --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      --bg-dark: #0b132b;
+      --bg-secondary: #1c2541;
+      --primary: #5bc0be;
+      --secondary: #3a506b;
+      --accent: #6a5acd;
+      --text-light: #f8fafc;
+      --text-muted: #94a3b8;
+      --bubble-you: linear-gradient(135deg, #5bc0be, #6a5acd);
+      --bubble-other: #1c2541;
+      --border: #2a354b;
     }
 
     * {
       box-sizing: border-box;
     }
 
-    html,
     body {
-      height: 100%;
       margin: 0;
-      font-family: var(--font-family);
-      background: var(--primary-bg);
-      color: var(--text-color);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-light);
       overflow: hidden;
     }
 
-    body {
-      display: flex;
-      height: 100vh;
-      width: 100vw;
-    }
-
-    /* Sidebar */
-    #sidebar {
-      width: 280px;
-      background: var(--sidebar-bg);
-      border-right: 1px solid #2a3942;
-      display: flex;
-      flex-direction: column;
-      transition: left 0.3s ease;
-    }
-
-    #sidebar header {
-      background: #075e54;
-      color: #fff;
-      padding: 14px 16px;
-      font-size: 20px;
-      font-weight: 600;
+    /* MAIN HEADER */
+    #chatHeader {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      box-shadow: 0 2px 10px #0003;
+      padding: 12px 18px;
+      background: linear-gradient(90deg, var(--secondary), var(--accent));
+      color: var(--text-light);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      position: relative;
+      z-index: 10;
+      transition: all 0.3s ease;
     }
 
-    #sidebarToggle {
+    #headerLeft {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* ✅ CHAT APP LOGO */
+    #appLogo {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      object-fit: cover;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+      background: white;
+      padding: 3px;
+    }
+
+    #chatTitle {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    /* 3 dots menu */
+    #menuDots {
       background: none;
       border: none;
-      color: #fff;
       font-size: 22px;
+      color: white;
       cursor: pointer;
+      position: relative;
     }
 
-    #loggedInUser {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 15px;
-      border-bottom: 1px solid #2a3942;
+    #dropdown {
+      display: none;
+      position: absolute;
+      right: 12px;
+      top: 54px;
+      background: var(--bg-secondary);
+      border-radius: 10px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+      z-index: 1000;
     }
 
-    #userProfilePic {
-      width: 70px;
-      height: 70px;
-      border-radius: 50%;
-      object-fit: cover;
-      box-shadow: 0 0 0 3px #25d36655;
-    }
-
-    #userList {
-      flex-grow: 1;
-      overflow-y: auto;
-      scrollbar-width: thin;
-      scrollbar-color: #2a3942 #111b21;
-    }
-
-    .user {
-      padding: 10px 16px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
+    #dropdown button {
+      display: block;
+      padding: 12px 22px;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      color: var(--text-light);
       cursor: pointer;
-      border-bottom: 1px solid #2a3942;
+      font-size: 15px;
       transition: background 0.2s;
     }
 
-    .user:hover,
-    .user.active {
-      background: #0b141a;
+    #dropdown button:hover {
+      background: #3a506b;
+    }
+
+    /* SEARCH */
+    #searchBar {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-secondary);
+    }
+
+    #searchInput {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 25px;
+      border: 1px solid var(--border);
+      outline: none;
+      font-size: 15px;
+      background: var(--bg-dark);
+      color: var(--text-light);
+    }
+
+    #searchInput:focus {
+      border-color: var(--primary);
+    }
+
+    /* USER LIST */
+    #userList {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+      background: var(--bg-dark);
+    }
+
+    .user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 10px;
+      border-radius: 12px;
+      transition: 0.25s;
+      cursor: pointer;
+    }
+
+    .user:hover {
+      background: rgba(91, 192, 190, 0.1);
     }
 
     .user img {
-      width: 42px;
-      height: 42px;
+      width: 50px;
+      height: 50px;
       border-radius: 50%;
       object-fit: cover;
+      border: 2px solid transparent;
     }
 
-    .user span {
-      font-size: 16px;
+    .username {
       font-weight: 500;
+      font-size: 16px;
     }
 
-    /* Chat area */
-    #mainChat {
+    /* CHAT SCREEN */
+    #chatScreen {
+      display: none;
       flex: 1;
-      display: flex;
       flex-direction: column;
-      background: var(--primary-bg);
+      background: var(--bg-secondary);
+      height: 100%;
     }
 
-    #chatHeader {
-      background: var(--secondary-bg);
-      padding: 15px;
-      font-size: 18px;
-      font-weight: 600;
-      border-bottom: 1px solid #2a3942;
+    #chatTop {
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      gap: 10px;
+      padding: 12px;
+      background: linear-gradient(90deg, var(--secondary), var(--accent));
+      color: white;
     }
 
-    #mobileMenu {
+    #backBtn {
       background: none;
       border: none;
       color: white;
       font-size: 22px;
-      display: none;
       cursor: pointer;
+    }
+
+    #chatUserName {
+      font-weight: 600;
+      font-size: 18px;
+    }
+
+    #chatStatus {
+      font-size: 12px;
+      color: #cbd5e1;
+      margin-top: 2px;
     }
 
     #chatMessages {
       flex: 1;
-      overflow-y: auto;
-      padding: 20px;
+      padding: 10px 12px 70px 12px;
       display: flex;
       flex-direction: column;
       gap: 10px;
-      background: #0b141a;
+      overflow-y: auto;
+      background: var(--bg-dark);
     }
 
     .message {
       display: flex;
       align-items: flex-end;
-      gap: 10px;
-      max-width: 70%;
-    }
-
-    .message img {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      object-fit: cover;
+      max-width: 75%;
     }
 
     .message.you {
@@ -174,146 +225,110 @@
       flex-direction: row-reverse;
     }
 
+    .message .text {
+      padding: 10px 14px;
+      border-radius: 18px;
+      font-size: 15px;
+      line-height: 1.4;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+
     .message.you .text {
-      background: var(--message-bg-you);
-      color: #e9edef;
-      border-radius: 18px 18px 5px 18px;
+      background: var(--bubble-you);
+      color: white;
+      border-bottom-right-radius: 5px;
     }
 
     .message.other .text {
-      background: var(--message-bg-other);
-      border-radius: 18px 18px 18px 5px;
-    }
-
-    .text {
-      padding: 10px 14px;
-      font-size: 16px;
-      line-height: 1.4;
+      background: var(--bubble-other);
+      border-bottom-left-radius: 5px;
+      color: var(--text-light);
     }
 
     #chatInput {
       display: flex;
-      padding: 10px;
-      border-top: 1px solid #2a3942;
-      background: var(--secondary-bg);
       align-items: center;
       gap: 10px;
+      padding: 10px 12px;
+      border-top: 1px solid var(--border);
+      background: var(--bg-secondary);
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 99;
     }
 
     #messageInput {
       flex: 1;
       padding: 12px 16px;
       border-radius: 25px;
-      border: none;
+      border: 1px solid var(--border);
       outline: none;
-      background: #2a3942;
-      color: #fff;
-      font-size: 16px;
+      font-size: 15px;
+      background: var(--bg-dark);
+      color: var(--text-light);
     }
 
     #sendBtn {
-      background: var(--accent-green);
-      color: #fff;
+      background: var(--primary);
       border: none;
-      padding: 12px 20px;
-      border-radius: 25px;
-      font-size: 16px;
+      color: white;
+      border-radius: 50%;
+      width: 45px;
+      height: 45px;
+      font-size: 18px;
       cursor: pointer;
+      transition: 0.25s;
     }
 
     #sendBtn:hover {
-      background: #1db954;
-    }
-
-    /* Responsive mobile */
-    @media (max-width: 700px) {
-      #sidebar {
-        position: fixed;
-        left: -280px;
-        top: 0;
-        bottom: 0;
-        z-index: 100;
-        height: 100%;
-      }
-
-      #sidebar.show {
-        left: 0;
-      }
-
-      #mobileMenu {
-        display: inline-block;
-      }
-
-      #chatHeader {
-        justify-content: flex-start;
-        gap: 10px;
-      }
-
-      #chatTitle {
-        flex: 1;
-      }
-
-      #chatInput {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: var(--secondary-bg);
-        padding: 8px 10px;
-        z-index: 99;
-      }
-
-      #chatMessages {
-        padding-bottom: 70px;
-      }
+      background: var(--accent);
+      transform: scale(1.1);
     }
   </style>
 </head>
 
 <body>
-  <div id="sidebar">
-    <header>
-      Contacts
-      <button id="sidebarToggle">×</button>
-    </header>
-    <div id="loggedInUser">
-      <img id="userProfilePic" src="default.png" alt="Profile" />
+  <!-- Header -->
+  <div id="chatHeader">
+    <div id="headerLeft">
+      <img id="appLogo" src="logo.jpeg" alt="Chat App Logo" />
+      <div id="chatTitle">Chat App</div>
     </div>
-    <div id="userList"></div>
+    <div>
+      <button id="menuDots">⋮</button>
+      <div id="dropdown">
+        <button id="logoutBtn">Logout</button>
+      </div>
+    </div>
   </div>
 
-  <div id="mainChat">
-    <div id="chatHeader">
-      <button id="mobileMenu">☰</button>
-      <div id="chatTitle">Select a user to chat</div>
-      <button id="logoutBtn"
-        style="background:none;border:1px solid #25d366;color:#25d366;padding:6px 10px;border-radius:8px;">Logout</button>
+  <div id="searchBar"><input type="text" id="searchInput" placeholder="Search user..." /></div>
+  <div id="userList"></div>
+
+  <!-- Chat Section -->
+  <div id="chatScreen">
+    <div id="chatTop">
+      <button id="backBtn">←</button>
+      <div>
+        <div id="chatUserName"></div>
+        <div id="chatStatus">online</div>
+      </div>
     </div>
     <div id="chatMessages"></div>
-    <div id="chatInput" style="display:none;">
-      <input type="text" id="messageInput" placeholder="Type a message..." autocomplete="off" autocorrect="off"
-        autocapitalize="off" spellcheck="false" />
-      <button id="sendBtn">Send</button>
+    <div id="chatInput">
+      <input type="text" id="messageInput" placeholder="Type a message..." autocomplete="off" />
+      <button id="sendBtn">➤</button>
     </div>
-
   </div>
 
   <script>
-    const username = localStorage.getItem('username');
-    if (!username) window.location.href = 'login.html';
+    const username = localStorage.getItem("username");
+    if (!username) window.location.href = "login.html";
 
     let currentChatUser = null;
     let usersData = [];
-
-    async function showUserProfilePic() {
-      try {
-        const res = await fetch(`/users/${encodeURIComponent(username)}`);
-        const users = await res.json();
-        const me = users.find(u => u.username === username);
-        const img = document.getElementById('userProfilePic');
-        img.src = me?.profilePic ? `/uploads/${me.profilePic}` : 'default.png';
-      } catch { }
-    }
 
     async function loadUsers() {
       const res = await fetch(`/users/${encodeURIComponent(username)}`);
@@ -323,92 +338,86 @@
     }
 
     function renderUsers(users) {
-      const list = document.getElementById('userList');
-      list.innerHTML = '';
+      const list = document.getElementById("userList");
+      list.innerHTML = "";
       users.forEach(u => {
-        const div = document.createElement('div');
-        div.className = 'user';
-        const img = document.createElement('img');
-        img.src = u.profilePic ? `/uploads/${u.profilePic}` : 'default.png';
-        const span = document.createElement('span');
-        span.textContent = u.username;
-        div.append(img, span);
-        div.onclick = () => openChat(u.username, div);
+        const div = document.createElement("div");
+        div.className = "user";
+        const img = document.createElement("img");
+        img.src = u.profilePic ? `/uploads/${u.profilePic}` : "default.png";
+        const name = document.createElement("div");
+        name.className = "username";
+        name.textContent = u.username;
+        div.append(img, name);
+        div.onclick = () => openChat(u.username);
         list.append(div);
       });
     }
 
-    async function openChat(user, div) {
+    async function openChat(user) {
       currentChatUser = user;
-      document.getElementById('chatTitle').textContent = 'Chat with ' + user;
-      document.getElementById('chatInput').style.display = 'flex';
-      document.querySelectorAll('.user').forEach(e => e.classList.remove('active'));
-      div.classList.add('active');
+      document.getElementById("chatUserName").textContent = user;
+      document.getElementById("chatHeader").style.display = "none";
+      document.getElementById("searchBar").style.display = "none";
+      document.getElementById("userList").style.display = "none";
+      document.getElementById("chatScreen").style.display = "flex";
       await loadMessages();
-      document.getElementById('sidebar').classList.remove('show');
     }
 
     async function loadMessages() {
       if (!currentChatUser) return;
       const res = await fetch(`/chat/${username}/${currentChatUser}`);
       const msgs = await res.json();
-      const box = document.getElementById('chatMessages');
-      box.innerHTML = '';
+      const box = document.getElementById("chatMessages");
+      box.innerHTML = "";
       msgs.forEach(m => {
-        const div = document.createElement('div');
-        div.className = 'message ' + (m.from === username ? 'you' : 'other');
-        const img = document.createElement('img');
-        const sender = m.from === username ? username : currentChatUser;
-        const info = usersData.find(u => u.username === sender);
-        img.src = info?.profilePic ? `/uploads/${info.profilePic}` : 'default.png';
-        const text = document.createElement('div');
-        text.className = 'text';
+        const div = document.createElement("div");
+        div.className = "message " + (m.from === username ? "you" : "other");
+        const text = document.createElement("div");
+        text.className = "text";
         text.textContent = m.message;
-        div.append(img, text);
+        div.append(text);
         box.append(div);
       });
       box.scrollTop = box.scrollHeight;
     }
 
     async function sendMessage() {
-      const input = document.getElementById('messageInput');
+      const input = document.getElementById("messageInput");
       const msg = input.value.trim();
       if (!msg || !currentChatUser) return;
-      await fetch('/send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ from: username, to: currentChatUser, message: msg })
+      await fetch("/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ from: username, to: currentChatUser, message: msg }),
       });
-      input.value = '';
+      input.value = "";
       await loadMessages();
     }
 
-    document.getElementById('sendBtn').onclick = sendMessage;
-    document.getElementById('messageInput').addEventListener('keypress', e => {
-      if (e.key === 'Enter') {
+    document.getElementById("sendBtn").onclick = sendMessage;
+    document.getElementById("messageInput").addEventListener("keypress", e => {
+      if (e.key === "Enter") {
         e.preventDefault();
         sendMessage();
       }
     });
 
-    document.getElementById('logoutBtn').onclick = () => {
+    document.getElementById("backBtn").onclick = () => location.reload();
+
+    const menuDots = document.getElementById("menuDots");
+    const dropdown = document.getElementById("dropdown");
+    menuDots.onclick = () => {
+      dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+    };
+
+    document.getElementById("logoutBtn").onclick = () => {
       localStorage.clear();
-      window.location.href = 'login.html';
+      window.location.href = "login.html";
     };
 
-    document.getElementById('sidebarToggle').onclick = () => {
-      document.getElementById('sidebar').classList.remove('show');
-    };
-    document.getElementById('mobileMenu').onclick = () => {
-      document.getElementById('sidebar').classList.toggle('show');
-    };
-
-    showUserProfilePic();
     loadUsers();
-    setInterval(() => {
-      if (currentChatUser) loadMessages();
-    }, 2000);
+    setInterval(() => { if (currentChatUser) loadMessages(); }, 2000);
   </script>
 </body>
-
 </html>
